@@ -1,43 +1,45 @@
-const AWS = require('aws-sdk')
-const { v4: uuidv4 } = require('uuid')
+const { scanTable, addUser, getUserByEmail } = require('./dataMethods')
 
-process.env.AWS_SDK_LOAD_CONFIG = true
-process.env.AWS_PROFILE = 'UserTableManager'
+const express = require('express')
+const app = express()
+const port = 3000
 
-AWS.config.update({
-  credentials: new AWS.SharedIniFileCredentials(),
+app.use(express.json())
+
+app.get('/list', (req, res) => {
+  scanTable()
+    .then((data) => res.send(data.Items))
+    .catch((err) => {
+      const statusCode = parseInt(err.statusCode || 500)
+      res.status(statusCode).send(err)
+    })
 })
 
-const documentClient = new AWS.DynamoDB.DocumentClient()
-const TABLE_NAME = 'Users'
+app.post('/user', (req, res) => {
+  const { email, password } = req.body
 
-const scanTable = () => {
-  documentClient.scan(
-    {
-      TableName: TABLE_NAME,
-    },
-    (err, data) => {
-      if (err) console.log('err', err)
-      else console.log('data', data)
-    }
-  )
-}
+  if (!email) return res.status(400).send('Email required')
+  if (!password) return res.status(400).send('Password required')
 
-const createUser = (email, password) => {
-  documentClient.put(
-    {
-      TableName: TABLE_NAME,
-      Item: {
-        id: uuidv4(),
-        email: email,
-        password: password,
-      },
-    },
-    (err, data) => {
-      if (err) console.log('err', err)
-      else console.log('data', data)
-    }
-  )
-}
+  addUser(email, password)
+    .then((data) => res.send(data))
+    .catch((err) => {
+      const statusCode = parseInt(err.statusCode || 500)
+      res.status(statusCode).send(err)
+    })
+})
 
-scanTable()
+app.get('/user', (req, res) => {
+  const { email } = req.body
+
+  if (!email) return res.status(400).send('Email required')
+
+  getUserByEmail(email)
+    .then((data) => res.send(data))
+    .catch((err) => {
+      const statusCode = parseInt(err.statusCode || 500)
+      res.status(statusCode).send(err)
+    })
+})
+
+app.listen(port, () => console.log(`Server listening on port ${port}`))
