@@ -16,7 +16,7 @@ const scanTable = () => documentClient.scan({ TableName: TABLE_NAME }).promise()
 const addUser = (email, password) =>
   documentClient
     .put({
-      TableName: 'bug',
+      TableName: TABLE_NAME,
       Item: {
         id: uuidv4(),
         email: email,
