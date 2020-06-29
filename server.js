@@ -33,7 +33,12 @@ app.post('/user', (req, res) => {
 
 app.get('/users', (req, res) => {
   getAllUsers()
-    .then((data) => res.send(data.Items))
+    .then((data) => {
+      data.Items.forEach((item) => {
+        delete item.password
+      })
+      res.send(data.Items)
+    })
     .catch((err) => {
       const statusCode = parseInt(err.statusCode || 500)
       res.status(statusCode).send({ error: err.message || 'Server error' })
