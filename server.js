@@ -1,16 +1,38 @@
-const { scanTable, addUser, getUserByEmail } = require('./dataMethods')
-
 const express = require('express')
 const cors = require('cors')
+const bcrypt = require('bcrypt')
+const { addUser, getUserByName, getAllUsers } = require('./dynamo')
+
 const app = express()
 const port = 3000
+const saltRounds = 10
 
-app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+app.use(cors())
 
-app.get('/list', (req, res) => {
-  scanTable()
+app.post('/user', (req, res) => {
+  const { name, password } = req.body
+
+  if (!name) return res.status(400).send({ error: 'Name required' })
+  if (!password) return res.status(400).send({ error: 'Password required' })
+
+  bcrypt.hash(password, saltRounds, (err, passwordHash) => {
+    if (err) {
+      res.status(500).send()
+    } else {
+      addUser(name, passwordHash)
+        .then((data) => res.send(data))
+        .catch((err) => {
+          const statusCode = parseInt(err.statusCode || 500)
+          res.status(statusCode).send({ error: err.message || 'Server error' })
+        })
+    }
+  })
+})
+
+app.get('/users', (req, res) => {
+  getAllUsers()
     .then((data) => res.send(data.Items))
     .catch((err) => {
       const statusCode = parseInt(err.statusCode || 500)
@@ -18,27 +40,27 @@ app.get('/list', (req, res) => {
     })
 })
 
-app.post('/user', (req, res) => {
-  const { email, password } = req.body
+app.post('/login', (req, res) => {
+  const { name, password } = req.body
 
-  if (!email) return res.status(400).send({ error: 'Email required' })
+  if (!name) return res.status(400).send({ error: 'Name required' })
   if (!password) return res.status(400).send({ error: 'Password required' })
 
-  addUser(email, password)
-    .then((data) => res.send(data))
-    .catch((err) => {
-      const statusCode = parseInt(err.statusCode || 500)
-      res.status(statusCode).send({ error: err.message || 'Server error' })
+  getUserByName(name)
+    .then((data) => {
+      if (data.Item) {
+        bcrypt.compare(password, data.Item.password, (err, result) => {
+          if (err || result != true) {
+            res.status(401).send({ error: err || 'Password invalid' })
+          } else {
+            delete data.Item.password
+            res.send(data)
+          }
+        })
+      } else {
+        res.status(404).send({ error: 'User not found' })
+      }
     })
-})
-
-app.get('/user', (req, res) => {
-  const { email } = req.body
-
-  if (!email) return res.status(400).send({ error: 'Email required' })
-
-  getUserByEmail(email)
-    .then((data) => res.send(data))
     .catch((err) => {
       const statusCode = parseInt(err.statusCode || 500)
       res.status(statusCode).send({ error: err.message || 'Server error' })
