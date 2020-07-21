@@ -1,18 +1,9 @@
-const express = require('express')
-const cors = require('cors')
 const bcrypt = require('bcrypt')
-const { addUser, getUserByName, getAllUsers } = require('./dynamo')
+const { addUser, getUserByName, getAllUsers } = require('../dynamo')
 
-const app = express()
-const port = 3000
-const saltRounds = 10
-
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
-app.use(cors())
-
-app.post('/user', (req, res) => {
+const createUser = (req, res) => {
   const { name, password } = req.body
+  const saltRounds = 10
 
   if (!name) return res.status(400).send({ error: 'Name required' })
   if (!password) return res.status(400).send({ error: 'Password required' })
@@ -29,23 +20,9 @@ app.post('/user', (req, res) => {
         })
     }
   })
-})
+}
 
-app.get('/users', (req, res) => {
-  getAllUsers()
-    .then((data) => {
-      data.Items.forEach((item) => {
-        delete item.password
-      })
-      res.send(data.Items)
-    })
-    .catch((err) => {
-      const statusCode = parseInt(err.statusCode || 500)
-      res.status(statusCode).send({ error: err.message || 'Server error' })
-    })
-})
-
-app.post('/login', (req, res) => {
+const loginUser = (req, res) => {
   const { name, password } = req.body
 
   if (!name) return res.status(400).send({ error: 'Name required' })
@@ -70,6 +47,23 @@ app.post('/login', (req, res) => {
       const statusCode = parseInt(err.statusCode || 500)
       res.status(statusCode).send({ error: err.message || 'Server error' })
     })
-})
+}
+const listUsers = (req, res) => {
+  getAllUsers()
+    .then((data) => {
+      data.Items.forEach((item) => {
+        delete item.password
+      })
+      res.send(data.Items)
+    })
+    .catch((err) => {
+      const statusCode = parseInt(err.statusCode || 500)
+      res.status(statusCode).send({ error: err.message || 'Server error' })
+    })
+}
 
-app.listen(port, () => console.log(`Server listening on port ${port}`))
+module.exports = {
+  createUser,
+  loginUser,
+  listUsers,
+}

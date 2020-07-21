@@ -1,11 +1,11 @@
 const AWS = require('aws-sdk')
 
-// process.env.AWS_SDK_LOAD_CONFIG = true
-// process.env.AWS_PROFILE = 'UserTableManager'
+process.env.AWS_SDK_LOAD_CONFIG = true
+process.env.AWS_PROFILE = 'UserTableManager'
 
 AWS.config.update({
   region: 'us-east-1',
-  // credentials: new AWS.SharedIniFileCredentials(),
+  credentials: new AWS.SharedIniFileCredentials(),
 })
 
 const documentClient = new AWS.DynamoDB.DocumentClient()
