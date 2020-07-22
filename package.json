@@ -1,13 +1,13 @@
 {
   "name": "user-auth",
   "version": "1.0.0",
+  "author": "Nathan Heller",
+  "license": "ISC",
   "scripts": {
-    "start": "yarn build && nodemon --exec babel-node server/index.js",
+    "dev": "yarn build && nodemon --exec babel-node server/index.js",
     "prebuild": "rm -rf dist",
     "build": "parcel build client/index.html"
   },
-  "author": "Nathan Heller",
-  "license": "ISC",
   "browserslist": [
     "last 1 Chrome version"
   ],
