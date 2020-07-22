@@ -2,5 +2,4 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import App from './src/components/App'
 
-const root = document.querySelector('#root')
-ReactDOM.hydrate(<App />, root)
+ReactDOM.hydrate(<App />, document.getElementById('root'))

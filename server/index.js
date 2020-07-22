@@ -20,8 +20,8 @@ const renderApp = (req, res) => {
 
   fs.readFile(indexFile, 'utf8', (err, data) => {
     if (err) {
-      console.error('Something went wrong:', err)
-      return res.status(500).send('There was an error reading index.html')
+      console.error('Error reading index.html:', err)
+      return res.status(500).send('Error reading index.html')
     }
     const document = data.replace('<div id="root"></div>', `<div id="root">${appHtml}</div>`)
     return res.send(document)

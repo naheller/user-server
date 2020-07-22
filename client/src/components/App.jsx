@@ -16,12 +16,12 @@ const App = () => {
 }
 
 const AuthenticatedApp = () => {
-  const { setUser } = useAuthContext()
+  const { logout } = useAuthContext()
 
   return (
     <div className="wrapper">
       <UserList />
-      <button onClick={() => setUser(null)}>Logout</button>
+      <button onClick={logout}>Logout</button>
     </div>
   )
 }
