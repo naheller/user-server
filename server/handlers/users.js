@@ -35,6 +35,7 @@ const loginUser = (req, res) => {
           if (err || result != true) {
             res.status(401).send({ error: err || 'Password invalid' })
           } else {
+            req.session.username = data.Item.username
             delete data.Item.password
             res.send(data)
           }
