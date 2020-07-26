@@ -35,7 +35,7 @@ export const CreateUser = () => {
 
   return (
     <div>
-      <h1>Create User</h1>
+      <h1>Sign Up</h1>
       <input
         type="text"
         value={name}
@@ -48,7 +48,7 @@ export const CreateUser = () => {
         placeholder="Password"
         onChange={(e) => setPassword(e.target.value)}
       />
-      <button onClick={handleCreateUser}>Create</button>
+      <button onClick={handleCreateUser}>Submit</button>
       <div>
         {errors.map((error, i) => (
           <div key={`error-${i}`}>{error}</div>

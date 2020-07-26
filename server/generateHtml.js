@@ -1,12 +1,17 @@
 const React = require('react')
 const ReactDOMServer = require('react-dom/server')
+const { StaticRouter } = require('react-router-dom')
 const path = require('path')
 const fs = require('fs')
 
 const App = require('../client/src/components/App')
 
 const generateHtml = (req, res) => {
-  const appHtml = ReactDOMServer.renderToString(<App />)
+  const appHtml = ReactDOMServer.renderToString(
+    <StaticRouter location={req.url} context={{}}>
+      <App />
+    </StaticRouter>
+  )
   const indexFile = path.join(__dirname, '..', 'dist', 'index.html')
 
   fs.readFile(indexFile, 'utf8', (err, data) => {

@@ -1,5 +1,15 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import App from './src/components/App'
+import { BrowserRouter } from 'react-router-dom'
 
-ReactDOM.hydrate(<App />, document.getElementById('root'))
+import App from './src/components/App'
+import AuthProvider from './src/context/AuthProvider'
+
+ReactDOM.hydrate(
+  <AuthProvider>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </AuthProvider>,
+  document.getElementById('root')
+)

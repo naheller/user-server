@@ -1,5 +1,6 @@
 const express = require('express')
 const path = require('path')
+
 const routes = require('./routes')
 const generateHtml = require('./generateHtml')
 const sessionHandler = require('./middleware/sessionHandler')
@@ -14,6 +15,6 @@ app.use(sessionHandler)
 app.use(express.static(path.join(__dirname, '..', 'dist')))
 
 app.use('/api', routes)
-app.use('/', generateHtml)
+app.use('/*', generateHtml)
 
 app.listen(port, () => console.log(`Server listening on port ${port}`))

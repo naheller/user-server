@@ -1,14 +1,24 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useLocation, useHistory } from 'react-router-dom'
+
 import { getNameErrors, getPasswordErrors } from '../utils/formValidation'
 import { loginUser } from '../endpoints'
 import { useAuthContext } from '../context/AuthProvider'
 
 export const Login = () => {
-  const { setUser } = useAuthContext()
+  const history = useHistory()
+  const location = useLocation()
+  const { user, setUser } = useAuthContext()
 
   const [name, setName] = useState('')
   const [password, setPassword] = useState('')
   const [errors, setErrors] = useState([])
+
+  useEffect(() => {
+    if (user) {
+      history.replace({ pathname: '/' })
+    }
+  }, [])
 
   const resetFields = () => {
     setName('')
@@ -35,6 +45,9 @@ export const Login = () => {
           } else {
             resetFields()
             setUser(data.Item.username)
+
+            const { from } = location.state || { from: { pathname: '/' } }
+            history.replace(from)
           }
         })
         .catch((err) => {

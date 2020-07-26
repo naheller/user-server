@@ -1,5 +1,9 @@
 import React, { useState, createContext, useContext } from 'react'
 
+// TODO: Sync with server sessions to determine auth
+// Maybe add a /checkSession endpoint for this
+// Also need to periodically check when user is idle
+
 const defaultContext = {
   user: null,
   setUser: () => {},
